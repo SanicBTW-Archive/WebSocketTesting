@@ -1,13 +1,13 @@
 import { WebSocketServer } from 'ws';
-import { Message, Room } from './roomHandler';
 
-const wsVer = "0.3";
+const wsVer = "0.5";
 const port:any = 6543;
 const wss = new WebSocketServer(({port: port}));
+var sentMessages:Object = new Object();
+var messageIndex:number = 0;
 var uptime = 0;
 
 wss.on('connection', (ws) => {
-    var room = new Room();
     console.log('Connection!');
 
     ws.on('message', (data) => 
@@ -15,16 +15,21 @@ wss.on('connection', (ws) => {
         var jsonData = JSON.parse(data.toString());
         switch(jsonData.type)
         {
-            case 'fetch room':
-                room.roomID = jsonData.room;
-                room.getInfo(ws);
+            case 'get messages':
+                for(var i in sentMessages)
+                {
+                    ws.send(JSON.stringify(sentMessages[i]));
+                }
                 break;
-            case 'send message room':
-                var daMessage = new Message();
-                daMessage.author = jsonData.author;
-                daMessage.content = jsonData.content;
-                daMessage.creation = jsonData.creationDate;
-                room.pushMessage(daMessage);
+            case 'new message':
+                var msgData = {
+                    'type': 'message',
+                    'user': jsonData.user,
+                    'content': jsonData.content
+                };
+                sentMessages['message' + messageIndex] = msgData;
+                messageIndex++;
+                sendToAllClients(JSON.stringify(msgData));
                 break;
             case 'get version':
                 var versionjson = {

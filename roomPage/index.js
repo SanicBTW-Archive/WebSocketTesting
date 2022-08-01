@@ -1,8 +1,6 @@
 var socket = new WebSocket('ws://sancopublic.ddns.net:6543/' + localStorage.getItem("room"));
 var notif = new CustomNotification();
 var wssversionText = document.getElementById('wssversionText');
-var roomNameInfo = document.getElementById('roomName');
-var roomDescInfo = document.getElementById('roomDesc');
 
 const detectDeviceType = () => /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
 ? 'Mobile'
@@ -12,18 +10,8 @@ socket.addEventListener('message', (resp) => {
     var jsonData = JSON.parse(resp.data);
     switch(jsonData.type)
     {
-        case 'new message':
-            addMessage(jsonData.message.author, jsonData.message.content);
-            break;
-        case 'room info':
-            roomNameInfo.innerText = jsonData.name;
-            roomDescInfo.innerText = jsonData.desc;
-            console.log(jsonData.messages);
-            for(var i in jsonData.messages)
-            {
-                console.log(jsonData.messages[i]);
-                addMessage(jsonData.messages[i].author, jsonData.messages[i].content)
-            }
+        case 'message':
+            addMessage(jsonData.user, jsonData.content);
             break;
         case 'connected':
             document.getElementById('wsStatus').innerText = "Connected";
@@ -65,8 +53,7 @@ function onLoad()
     socket.send(JSON.stringify(req));
 
     var req = {
-        "type": 'fetch room',
-        'room': localStorage.getItem('room')
+        "type": 'get messages'
     };
     socket.send(JSON.stringify(req));
 }
@@ -92,10 +79,10 @@ function sendMessage()
 {
     var damsg = document.getElementById('wsMessage').value;
     var daData = {
-        'type': 'send message room',
-        'author': 'Sanco (Guest)',
+        'type': 'new message',
+        'user': 'Sanco (Guest)',
         'content': damsg,
-        'creationDate': new Date()
     }
     socket.send(JSON.stringify(daData));
+    document.getElementById('wsMessage').value = '';
 }
