@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <script src="//cdn.jsdelivr.net/npm/eruda"></script>
+        <script>eruda.init();</script>
+
+        <script type="module" src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.esm.js"></script>
+        <script nomodule src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.js"></script>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@ionic/core/css/ionic.bundle.css" />
+
+        <link rel="stylesheet" href="../page/variables.css">
+        <link rel="stylesheet" href="../page/index.css">
+
+        <script src="../page/Notifications.js" defer></script>
+        <script src="./index.js" defer></script>
+
+        <title>Web socket testing</title>
+    </head>
+    <body onload="onLoad()" class="dark" style="overflow-y: hidden;">
+        <div class="outer">
+            <div id="notificationsPanel" class="notificationsPanel">
+                <div style="margin-left: 1rem; margin-right: 1rem;">
+                    <h1 id="notificationText"></h1>
+                    <p id="notificationSubText"></p>
+                </div>
+                <div style="background-color: dimgray; width: 100%;"> <div id="dismissProgress" style="width: 0%; height: 5px; transition: 1s; background-color: lightgreen;"> </div> </div>
+            </div>
+        </div>
+        <ion-app>
+            <ion-header>
+                <ion-toolbar>
+                    <ion-buttons slot="start">
+                        <ion-menu-button auto-hide="false"></ion-menu-button>
+                    </ion-buttons>
+                    <ion-title>Room 1</ion-title>
+                    <ion-title slot="end" id="wsStatus">Server status: Offline</ion-title>
+                </ion-toolbar>
+            </ion-header>
+
+            <ion-content>
+                <ion-grid>
+                    <ion-row>
+                        <ion-col>
+                            <ion-accordion-group>
+                                <ion-accordion>
+                                    <ion-item slot="header">
+                                        <ion-label>Room info</ion-label>
+                                    </ion-item>
+                                    <div class="ion-padding" slot="content">
+                                        <ion-item>
+                                            <ion-label>Room name</ion-label>
+                                            <h1 id="roomName"></h1>
+                                        </ion-item>
+                                        <ion-item>
+                                            <ion-label>Room description</ion-label>
+                                            <h1 id="roomDesc"></h1>
+                                        </ion-item>
+                                    </div>
+                                </ion-accordion>
+                            </ion-accordion-group>
+                        </ion-col>
+                    </ion-row>
+
+                    <div>
+                        <ion-row>
+                            <ion-col>
+                                <ion-card>
+                                    <ion-card-header>
+                                        <ion-card-title>Messages</ion-card-title>
+                                    </ion-card-header>
+                                    <ion-card-content style="position: sticky; max-height: 100%;">
+                                        <ion-list id="messages">
+
+                                        </ion-list>
+                                    </ion-card-content>
+                                </ion-card>
+                            </ion-col>
+                        </ion-row>
+                        <ion-row style="position: absolute; width: 100%; bottom: 0px; right: 0px; left: 0px;">
+                            <ion-col>
+                                <ion-item>
+                                    <ion-label>Message content</ion-label>
+                                    <ion-input type="text" id="wsMessage"></ion-input>
+                                </ion-item>
+                            </ion-col>
+                            <ion-button onclick="sendMessage()" style="margin-top: 10px;">Send</ion-button>
+                        </ion-row>
+                    </div>
+                </ion-grid>
+            </ion-content>
+        </ion-app>
+    </body>
+</html>

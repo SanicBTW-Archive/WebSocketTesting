@@ -62,6 +62,25 @@
                             </ion-card>
                         </ion-col>
                     </ion-row>
+
+                    <ion-row>
+                        <ion-col>
+                            <ion-card>
+                                <ion-card-header>
+                                    <ion-card-title>Rooms</ion-card-title>
+                                </ion-card-header>
+                                <ion-card-content>
+                                    <ion-item>
+                                        <ion-label>Room 1</ion-label>
+                                        <ion-button onclick="
+                                            window.location.assign('./roomPage/');
+                                            window.localStorage.setItem('room', 'room1');
+                                        ">Connect</ion-button>
+                                    </ion-item>
+                                </ion-card-content>
+                            </ion-card>
+                        </ion-col>
+                    </ion-row>
                 </ion-grid>
             </ion-content>
         </ion-app>
