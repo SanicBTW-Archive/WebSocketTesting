@@ -1,71 +1,82 @@
 var socket = new WebSocket('ws://sancopublic.ddns.net:6543/');
+var notif = new CustomNotification();
+var uptimeTotal = document.getElementById('uptimeTotal');
+var uptimeText = document.getElementById('uptimeText');
+
+const detectDeviceType = () => /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+? 'Mobile'
+: 'Desktop';
+
 
 socket.addEventListener('message', (resp) => {
     console.log("got data");
 
-    if(resp.data == "Connected!")
+    var jsonData = JSON.parse(resp.data);
+    switch(jsonData.type)
     {
-        document.getElementById('wsStatus').innerText = "Connected";
-    }
-
-    if(resp.data != ("Connected!"))
-    {
-        var jsonData = JSON.parse(resp.data);
-        console.table(jsonData);
-
-        addMessage(jsonData.user, jsonData.content);
+        case 'uptime':
+            uptimeTotal.innerText = jsonData.secs;
+            uptimeText.innerText = doTimeCheck(jsonData.hours, jsonData.min, jsonData.secs);
+            break;
+        case 'connected':
+            document.getElementById('wsStatus').innerText = "Connected";
+            notif.mainText = "Connected to the server";
+            notif.notify();
+            break;
+        default:
+            //data type wasnt implemented
+            break;
     }
 });
 
 function onLoad()
 {
-    var daData = {
-        'type': 'userName',
-        'content': ((localStorage.getItem('wsName') != null || undefined) ? localStorage.getItem('wsName') : "guest")
-    };
-    localStorage.setItem('wsName', daData.content);
-    socket.send(JSON.stringify(daData, null, 2));
-
-    document.getElementById('wsName').value = localStorage.getItem('wsName');
-
-    var req = {
-        'type': 'get messages request',
-    };
-
-    socket.send(JSON.stringify(req, null, 2));
+    var outerStyle = document.createElement("style");
+    if(detectDeviceType() == "Desktop")
+    {
+        outerStyle.innerHTML = `.outer { 
+            width: 100%; height: 97.9vh; display: flex; justify-content: center; align-items: center;
+        }`;
+    }
+    else
+    {
+        outerStyle.innerHTML = `.outer { 
+            width: 100%; height: 90vh; display: flex; justify-content: center; align-items: center;
+        }`;
+    }
+    document.head.appendChild(outerStyle);
 }
 
-function applyName()
+function doTimeCheck(h, m, s)
 {
-    localStorage.setItem('wsName', document.getElementById('wsName').value);
-    window.location.reload(true);
-}
-
-function sendMessage()
-{
-    var damsg = document.getElementById('wsMessage').value;
-    var daData = {
-        'type': 'message',
-        'user': localStorage.getItem('wsName'),
-        'content': damsg
-    };
-    socket.send(JSON.stringify(daData, null, 2));
-    document.getElementById('wsMessage').value = '';
-}
-
-function addMessage(messageAuthor, messageContent)
-{
-    var newMsgItem = document.createElement('div');
-
-    var msgItemAuthor = document.createElement('h2');
-    msgItemAuthor.style.color = 'white';
-    msgItemAuthor.innerText = messageAuthor;
-
-    var msgItemContent = document.createElement('h1');
-    msgItemContent.style.color = 'white';
-    msgItemContent.innerText = messageContent;
-
-    newMsgItem.appendChild(msgItemAuthor);
-    newMsgItem.appendChild(msgItemContent);
-    document.getElementById('messages').appendChild(newMsgItem);
+    var hourString = "00";
+    var minString = "00";
+    var secString = "00";
+    var fixedSecs = Math.floor(s % 60);
+    console.log(fixedSecs);
+    if(h < 10)
+    {
+        hourString = "0" + h;
+    }
+    else
+    {
+        hourString = h;
+    }
+    if(m < 10)
+    {
+        minString = "0" + m;
+    }
+    else
+    {
+        minString = m;
+    }
+    if(fixedSecs < 10)
+    {
+        secString = "0" + fixedSecs;
+    }
+    else
+    {
+        secString = fixedSecs;
+    }
+    return `${hourString}:${minString}:${secString}`;
 }

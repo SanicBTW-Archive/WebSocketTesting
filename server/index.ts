@@ -1,48 +1,20 @@
 import { WebSocketServer } from 'ws';
+import { dataTypes } from './src/dataTypes';
 
 const port:any = 6543;
 const wss = new WebSocketServer(({port: port}));
-var messagesSentArray = new Object();
-var messageIndex = 0;
+var uptime = 0;
+var dataShit = new dataTypes();
 
 wss.on('connection', (ws) => {
     console.log('Connection!');
 
-    ws.on('message', (data) => {
-        var jsonData = JSON.parse(data.toString());
-        console.table(jsonData);
-
-        switch(jsonData.type)
-        {
-            case 'get messages request':
-                console.log('requested to send all messages');
-                
-                for(var i in messagesSentArray)
-                {
-                    if(messagesSentArray[i].content.length >= 1){
-                        ws.send(JSON.stringify(messagesSentArray[i]));
-                    }
-                }
-                break;
-            case 'message':
-                var daData = {
-                    'user': jsonData.user,
-                    'content': jsonData.content
-                };
-                console.log("trying to save data and sending it back");
-                messagesSentArray['msg' + messageIndex] = daData;
-                messageIndex ++;
-                if(daData.content.length >= 1){
-                    sendToAllClients(JSON.stringify(daData, null, 2));
-                }
-                break;
-            default:
-                //do nothing
-                break;
-        }
+    ws.on('message', (data) => 
+    {
+        
     });
 
-    ws.send('Connected!');
+    ws.send(dataShit.connected());
 });
 
 console.log('Listening on port', port);
@@ -51,3 +23,9 @@ function sendToAllClients(data:any)
 {
     wss.clients.forEach(client => client.send(data));
 }
+
+setInterval(() => {
+    dataShit.secs = uptime;
+    uptime++;
+    sendToAllClients(dataShit.time());
+}, 1000);

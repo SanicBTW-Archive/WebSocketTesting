@@ -13,15 +13,29 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@ionic/core/css/ionic.bundle.css" />
 
         <link rel="stylesheet" href="./page/variables.css">
+        <link rel="stylesheet" href="./page/index.css">
 
+        <script src="./page/Notifications.js" defer></script>
         <script src="./client/index.js" defer></script>
 
         <title>Web socket testing</title>
     </head>
-    <body onload="onLoad()" class="dark">
+    <body onload="onLoad()" class="dark" style="overflow-y: hidden;">
+        <div class="outer">
+            <div id="notificationsPanel" class="notificationsPanel">
+                <div style="margin-left: 1rem; margin-right: 1rem;">
+                    <h1 id="notificationText"></h1>
+                    <p id="notificationSubText"></p>
+                </div>
+                <div style="background-color: dimgray; width: 100%;"> <div id="dismissProgress" style="width: 0%; height: 5px; transition: 1s; background-color: aqua;"> </div> </div>
+            </div>
+        </div>
         <ion-app>
             <ion-header>
                 <ion-toolbar>
+                    <ion-buttons slot="start">
+                        <ion-menu-button auto-hide="false"></ion-menu-button>
+                    </ion-buttons>
                     <ion-title>Web socket testing</ion-title>
                     <ion-title slot="end" id="wsStatus">Server status: Offline</ion-title>
                 </ion-toolbar>
@@ -31,54 +45,21 @@
                 <ion-grid>
                     <ion-row>
                         <ion-col>
-                            <ion-accordion-group>
-                                <ion-accordion>
-                                    <ion-item slot="header">
-                                        <ion-label>Config</ion-label>
+                            <ion-card>
+                                <ion-card-header>
+                                    <ion-card-title>Server details</ion-card-title>
+                                </ion-card-header>
+                                <ion-card-content>
+                                    <ion-item>
+                                        <ion-label>Total uptime</ion-label>
+                                        <h1 id="uptimeTotal"></h1>
                                     </ion-item>
-                                    <div class="ion-padding" slot="content">
-                                        <ion-item>
-                                            <ion-label>Name</ion-label>
-                                            <ion-input type="text" id="wsName"></ion-input>
-                                        </ion-item>
-                                        <ion-button onclick="applyName()">Apply name</ion-button>
-                                    </div>
-                                </ion-accordion>
-                            </ion-accordion-group>
-                        </ion-col>
-                    </ion-row>
-
-                    <ion-row>
-                        <ion-col>
-                            <ion-accordion-group>
-                                <ion-accordion>
-                                    <ion-item slot="header">
-                                        <ion-label>Send message</ion-label>
+                                    <ion-item>
+                                        <ion-label>Uptime</ion-label>
+                                        <h1 id="uptimeText">00:00:00</h1>
                                     </ion-item>
-                                    <div class="ion-padding" slot="content">
-                                        <ion-item>
-                                            <ion-label>Message content</ion-label>
-                                            <ion-input type="text" id="wsMessage"></ion-input>
-                                        </ion-item>
-                                        <ion-button onclick="sendMessage()">Send</ion-button>
-                                    </div>
-                                </ion-accordion>
-                            </ion-accordion-group>
-                        </ion-col>
-                    </ion-row>
-
-                    <ion-row>
-                        <ion-col>
-                            <ion-list>
-                                <ion-card>
-                                    <ion-card-header>
-                                        <ion-card-title>Messages</ion-card-title>
-                                    </ion-card-header>
-                                    <ion-card-content id="messages">
-
-                                    </ion-card-content>
-                                </ion-card>
-                            </ion-list>
+                                </ion-card-content>
+                            </ion-card>
                         </ion-col>
                     </ion-row>
                 </ion-grid>
