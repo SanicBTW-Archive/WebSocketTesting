@@ -19,15 +19,14 @@ socket.addEventListener('message', (resp) => {
 
 function onLoad()
 {
-    var the = localStorage.getItem('wsName');
     var daData = {
         'type': 'userName',
-        'content': ((the != null || undefined) ? the : "guest")
+        'content': ((localStorage.getItem('wsName') != null || undefined) ? localStorage.getItem('wsName') : "guest")
     };
     localStorage.setItem('wsName', daData.content);
     socket.send(JSON.stringify(daData, null, 2));
 
-    document.getElementById('wsName').value = the;
+    document.getElementById('wsName').value = localStorage.getItem('wsName');
 
     var req = {
         'type': 'get messages request',
@@ -51,6 +50,7 @@ function sendMessage()
         'content': damsg
     };
     socket.send(JSON.stringify(daData, null, 2));
+    document.getElementById('wsMessage').value = '';
 }
 
 function addMessage(messageAuthor, messageContent)

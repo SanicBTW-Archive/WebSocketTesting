@@ -19,7 +19,9 @@ wss.on('connection', (ws) => {
                 
                 for(var i in messagesSentArray)
                 {
-                    ws.send(JSON.stringify(messagesSentArray[i]));
+                    if(messagesSentArray[i].content.length >= 1){
+                        ws.send(JSON.stringify(messagesSentArray[i]));
+                    }
                 }
                 break;
             case 'message':
@@ -30,8 +32,9 @@ wss.on('connection', (ws) => {
                 console.log("trying to save data and sending it back");
                 messagesSentArray['msg' + messageIndex] = daData;
                 messageIndex ++;
-                console.table(daData);
-                sendToAllClients(JSON.stringify(daData, null, 2));
+                if(daData.content.length >= 1){
+                    sendToAllClients(JSON.stringify(daData, null, 2));
+                }
                 break;
             default:
                 //do nothing
