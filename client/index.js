@@ -1,12 +1,11 @@
 var socket = new WebSocket('ws://sancopublic.ddns.net:6543/');
 var notif = new CustomNotification();
-var uptimeTotal = document.getElementById('uptimeTotal');
 var uptimeText = document.getElementById('uptimeText');
+var wssversionText = document.getElementById('wssversionText');
 
 const detectDeviceType = () => /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
 ? 'Mobile'
 : 'Desktop';
-
 
 socket.addEventListener('message', (resp) => {
     console.log("got data");
@@ -14,8 +13,10 @@ socket.addEventListener('message', (resp) => {
     var jsonData = JSON.parse(resp.data);
     switch(jsonData.type)
     {
+        case 'res version':
+            wssversionText.innerText = jsonData.content;
+            break;
         case 'uptime':
-            uptimeTotal.innerText = jsonData.secs;
             uptimeText.innerText = doTimeCheck(jsonData.hours, jsonData.min, jsonData.secs);
             break;
         case 'connected':
@@ -27,6 +28,13 @@ socket.addEventListener('message', (resp) => {
             //data type wasnt implemented
             break;
     }
+});
+
+socket.addEventListener('close', () => {
+    notif.mainText = "Couldn't connect to websocket / Lost connection to websocket";
+    notif.subText = "Check your internet connection or ask the host";
+    notif.notify();
+    document.getElementById('wsStatus').innerText = 'Lost connection';
 });
 
 function onLoad()
@@ -45,6 +53,11 @@ function onLoad()
         }`;
     }
     document.head.appendChild(outerStyle);
+
+    var req = {
+        'type': 'get version'
+    }
+    socket.send(JSON.stringify(req));
 }
 
 function doTimeCheck(h, m, s)
