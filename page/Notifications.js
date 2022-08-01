@@ -21,11 +21,11 @@ class CustomNotification
             notifPanel.style.top = "0px";
 
             increaseTimer = setInterval(() => {
-                dismissTime += 1;
+                dismissTime += 0.5;
 
                 dismissProgress.style.width = dismissTime + "%";
 
-                if(dismissTime == 460)
+                if(dismissTime == 400)
                 {
                     this.#closeNotification();
                     this.onFinish();

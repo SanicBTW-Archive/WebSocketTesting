@@ -8,8 +8,6 @@ const detectDeviceType = () => /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobi
 : 'Desktop';
 
 socket.addEventListener('message', (resp) => {
-    console.log("got data");
-
     var jsonData = JSON.parse(resp.data);
     switch(jsonData.type)
     {
@@ -25,7 +23,7 @@ socket.addEventListener('message', (resp) => {
             notif.notify();
             break;
         default:
-            //data type wasnt implemented
+            console.log("RECEIVED NOT SUPPORTED DATA!");
             break;
     }
 });
@@ -66,7 +64,6 @@ function doTimeCheck(h, m, s)
     var minString = "00";
     var secString = "00";
     var fixedSecs = Math.floor(s % 60);
-    console.log(fixedSecs);
     if(h < 10)
     {
         hourString = "0" + h;
