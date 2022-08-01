@@ -2,11 +2,13 @@ var socket = new WebSocket('ws://sancopublic.ddns.net:6543/');
 
 socket.addEventListener('message', (resp) => {
     console.log("got data");
+
     if(resp.data == "Connected!")
     {
         document.getElementById('wsStatus').innerText = "Connected";
     }
-    else
+
+    if(resp.data != ("Connected!"))
     {
         var jsonData = JSON.parse(resp.data);
         console.table(jsonData);
@@ -22,9 +24,16 @@ function onLoad()
         'type': 'userName',
         'content': ((the != null || undefined) ? the : "guest")
     };
+    localStorage.setItem('wsName', daData.content);
     socket.send(JSON.stringify(daData, null, 2));
 
     document.getElementById('wsName').value = the;
+
+    var req = {
+        'type': 'get messages request',
+    };
+
+    socket.send(JSON.stringify(req, null, 2));
 }
 
 function applyName()
